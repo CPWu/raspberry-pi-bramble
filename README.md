@@ -22,3 +22,5 @@ Raspberry Pi 4's obtained through Adafruit, Pi-Shop and Ebay...
 
 ## Feature's On my Mind
 Under Construction
+
+## FAQ
