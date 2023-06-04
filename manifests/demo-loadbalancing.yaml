@@ -41,11 +41,9 @@ metadata:
   name: rancher-demo-service
   namespace: default
 spec:
-  type: NodePort
   selector:
     app: rancher-demo
   ports:
     - protocol: TCP
-      port: 8080
+      port: 80
       targetPort: 8080
-      nodePort: 30080
