@@ -24,3 +24,7 @@ Raspberry Pi 4's obtained through Adafruit, Pi-Shop and Ebay...
 Under Construction
 
 ## FAQ
+
+## References:
+1. https://devopscube.com/node-exporter-kubernetes/
+https://devopscube.com/setup-prometheus-monitoring-on-kubernetes/
