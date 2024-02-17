@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Python WebRTC</title>
+{% endblock %}
+
+{% block body %}
+<h1>Python WebRTC</h1>
+
+<div id="videos">
+    <!-- User #1 -->
+    <video class="video-player" id="user-1" autoplay playsinline></video>
+    <!-- User #2 -->
+    <video class="video-player" id="user-2" autoplay playsinline></video>
+
+    <p>
+        <button id="create-offer">Create Offer</button>
+        <label>SDP Offer</label>
+        <textarea id="offer-sdp"></textarea>
+        <br />
+        <button id="create-answer">Create Answer</button>
+        <label>SDP Answer</label>
+        <textarea id="answer-sdp"></textarea>
+        <br />
+        <button id="add-answer">Add Answer</button>
+    </p>
+
+</div>
+</div>
+{% endblock %}

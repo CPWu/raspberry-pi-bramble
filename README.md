@@ -27,4 +27,7 @@ Under Construction
 
 ## References:
 1. https://devopscube.com/node-exporter-kubernetes/
-https://devopscube.com/setup-prometheus-monitoring-on-kubernetes/
+2. https://devopscube.com/setup-prometheus-monitoring-on-kubernetes/
+3. https://man.ilayk.com/gist/kubernetes%20cloudflared%20deployment%20with%20podmonitor/
+4. https://github.com/cloudflare/argo-tunnel-examples/blob/master/named-tunnel-k8s/cloudflared.yaml
+5. https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/deploy-tunnels/deployment-guides/kubernetes/
