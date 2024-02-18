@@ -5,13 +5,37 @@ import requests
 from aiortc.contrib.signaling import BYE, TcpSocketSignaling
 from aiortc.contrib.media import MediaPlayer, MediaRelay
 from aiortc.mediastreams import VideoStreamTrack
-
 from multiprocessing import Process, RawArray, Lock
-from ctypes import c_uint8
-import numpy as np
-
+from ctypes import c_uint8 
 import asyncio
 from aiortc.mediastreams import MediaStreamError
+
+# PyGame
+import pygame
+pygame.init()
+
+# Constants
+WIDTH, HEIGHT = 1920, 1080
+WIN = pygame.display.set_mode((WIDTH,HEIGHT))
+pygame.display.set_caption("Robot View")
+WHITE = (255,255,255)
+FPS = 30
+
+def draw_window():
+    WIN.fill(WHITE)
+    pygame.display.update()
+
+def window():
+  clock = pygame.time.Clock()
+  run = True
+  while run:
+    clock.tick(FPS) # Ensures that frame rate does not run higher than 30 FPS
+    for event in pygame.event.get():
+      if event.type == pygame.QUIT:
+        run = False
+      draw_window()
+
+  pygame.quit()
 
 ######################################################################
 #                       Video Capture Track
@@ -108,8 +132,9 @@ def receiveStream(buf):
     asyncio.run(main(peer_connection, recorder, tcp_socket_signalling))
 
 if __name__ == "__main__":
-  print("Main")
-  receiveStream(cbuf)
+  # print("Main")
+  # receiveStream(cbuf)
+  window()
 
 
 
