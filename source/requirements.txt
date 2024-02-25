@@ -1,3 +1,4 @@
 flask==3.0.2
 aiortc==1.7.0
 requests==2.31.0
+python3-dotenv==1.0.1

@@ -12,7 +12,8 @@ from aiortc.mediastreams import MediaStreamError
 
 # PyGame
 import pygame
-pygame.init()
+# CV2
+import cv2
 
 # Constants
 WIDTH, HEIGHT = 1920, 1080
@@ -20,8 +21,15 @@ WIN = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption("Robot View")
 WHITE = (255,255,255)
 FPS = 30
-
+camera = cv2.VideoCapture(0)
 def draw_window():
+    ret, frame = camera.read()
+    if frame is None or frame.shape[0] == 0:
+       return
+    cv2.imshow('fame',frame)
+    if cv2.waitKey(1) & 0xFF == ord('q'): 
+        return
+
     WIN.fill(WHITE)
     pygame.display.update()
 
@@ -79,20 +87,21 @@ class VideoMediaStream:
 
 # Signaling Server - Flask Server
 SIGNALING_SERVER = "127.0.0.1"
-PORT = 5000
+PORT = 8080
 
-async def main(peer_connection: RTCPeerConnection, recorder: VideoMediaStream, Ttcp_socket_signalling: TcpSocketSignaling):
+async def streamer(peer_connection: RTCPeerConnection, recorder: VideoMediaStream, Ttcp_socket_signalling: TcpSocketSignaling):
     def add_tracks():
-      peer_connection.addTrack(VideoStreamTrack())
+      peer_connection.addTrack(VideoStreamTrack()) #
       print("Added Video Track")   
 
     @peer_connection.on("track")
     async def on_track(track):
         print("Receiving %s" % track.kind)
-        recorder.addTrack(track)
-        print("Added Video") 
-        await recorder.start()
-        print("Recorder Started")
+        if track.kind == "video":
+          recorder.addTrack(track)
+          print("Added Video") 
+          await recorder.start()
+          print("Recorder Started")
         
     await Ttcp_socket_signalling.connect()
     print("Signalling Connect")
@@ -102,12 +111,17 @@ async def main(peer_connection: RTCPeerConnection, recorder: VideoMediaStream, T
         responseObject = await Ttcp_socket_signalling.receive()
 
         if isinstance(responseObject, RTCSessionDescription):
+            # Set Remte SDP into Remote Description
             await peer_connection.setRemoteDescription(responseObject)
-
-            print("Start Video") 
-            add_tracks()
+            # Create Answer from Remote SDP
             await peer_connection.setLocalDescription(await peer_connection.createAnswer())
+
+            print("Adding Video Track") 
+            add_tracks()
+            
+            # Respond to Server with Answer
             await Ttcp_socket_signalling.send(peer_connection.localDescription)
+            print("Answer sent to Server")
         elif isinstance(responseObject, RTCIceCandidate):
             print("adding ice candidate")
             await peer_connection.addIceCandidate(responseObject)
@@ -115,6 +129,8 @@ async def main(peer_connection: RTCPeerConnection, recorder: VideoMediaStream, T
         elif responseObject is BYE:
             print("Exiting...")
             break
+    
+    print("Connection Established - Client")
 
 
 def receiveStream(buf):
@@ -125,11 +141,12 @@ def receiveStream(buf):
     # Create Peer Connection
     peer_connection = RTCPeerConnection()
     print("Peer Connection")
+
     # Media Reader
     recorder = VideoMediaStream()
 
     # Create the Session Description Protocol
-    asyncio.run(main(peer_connection, recorder, tcp_socket_signalling))
+    asyncio.run(streamer(peer_connection, recorder, tcp_socket_signalling))
 
 if __name__ == "__main__":
   # print("Main")

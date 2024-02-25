@@ -8,7 +8,7 @@ from aiortc.contrib.media import MediaPlayer, MediaRelay
 
 # Signaling Server - Flask Server
 SIGNALING_SERVER = "127.0.0.1"
-PORT = 5000
+PORT = 8080
 
 # ID = "Offerer01"
 
@@ -76,28 +76,30 @@ PORT = 5000
 # asyncio.run(main())
 
 async def main(peer_connection: RTCPeerConnection, player: MediaPlayer, Ttcp_socket_signalling: TcpSocketSignaling):
+    await Ttcp_socket_signalling.connect() # doesnt do anything
     def add_tracks():
-        if player and player.audio:
-            peer_connection.addTrack(player.audio)
         if player and player.video:
             peer_connection.addTrack(player.video)
             print("Added Video Track")
-        
-    await Ttcp_socket_signalling.connect()
+
+    # Establish connection
+    # await Ttcp_socket_signalling.connect()
 
     # Create an Session Description Protocol (SDP) Offer, Send to signal server over TCP Sockets
     add_tracks()
     await peer_connection.setLocalDescription(await peer_connection.createOffer())
-    await Ttcp_socket_signalling.send(peer_connection.localDescription)
+    await Ttcp_socket_signalling.send(peer_connection.localDescription) #->
+    print("Waiting for Answer")
 
-    # Waiting for Signal Answer
+    # Waiting for Signal Answer # <-
     while True:
         responseObject = await Ttcp_socket_signalling.receive()
 
         if isinstance(responseObject, RTCSessionDescription):
-            print("Setting Remote Description")
+            print("Receiving Answer from Client - Remote Description")
             await peer_connection.setRemoteDescription(responseObject)
-            print("Finsihed Remote Description")
+            print("Finsihed setting Remote Description from client")
+            # Geting lost here
         elif isinstance(responseObject, RTCIceCandidate):
             print("Adding Ice Candidate")    
             await peer_connection.addIceCandidate(responseObject)
@@ -105,7 +107,7 @@ async def main(peer_connection: RTCPeerConnection, player: MediaPlayer, Ttcp_soc
             print("Exiting...")
             break
 
-
+    print("Connection Established - Server")
 
 if __name__ == "__main__":
     tcp_socket_signalling = TcpSocketSignaling(SIGNALING_SERVER,port=PORT)
