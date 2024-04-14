@@ -1,0 +1,9 @@
+Metadata-Version: 2.1
+Name: jsonify
+Version: 0.5
+Summary: A csv to json converter
+Author: Jonathan Cox
+Author-email: jonathan.cox.c@gmail.com
+License: MIT
+Keywords: csv json
+

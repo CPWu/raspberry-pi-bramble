@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: chat
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat
+  namespace: chat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chat
+  template:
+    metadata:
+      labels:
+        app: chat
+    spec:
+      containers:
+      - name: chat
+        image: saterial/docker-autoscale-chat:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+          name: web
+          protocol: TCP
+        readinessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chat
+  namespace: chat
+spec:
+  selector:
+    app: chat
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000

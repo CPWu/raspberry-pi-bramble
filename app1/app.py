@@ -1,33 +1,19 @@
-from flask import Flask, request
+from flask import Flask
+from flask_smorest import Api
+from resources.item import blp as ItemBlueprint
+from resources.store import blp as StoreBlueprint
 
 app = Flask(__name__)
 
-stores = [{"name": "Lowes", "items": [{"name": "Chair", "price": 15.99}]}]
+app.config["PROPAGATE_EXCEPTIONS"] = True
+app.config["API_TITLE"] = "Stores Rest API"
+app.config["API_VERSION"] = "v1"
+app.config["OPENAPI_VERSION"] = "3.0.3"
+app.config["OPENAPI_URL_PREFIX"] = "/"
+app.config["OPENAPI_SWAGGER_UI_PATH"] = "/swagger-ui"
+app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
 
+api = Api(app)
 
-@app.route("/store", methods=["GET"])
-def get_stores():
-    return {"stores": stores}
-
-
-@app.route("/store", methods=["POST"])
-def create_store():
-    request_data = request.get_json()
-    new_store = {"name": request_data["name"], "items": []}
-    stores.append(new_store)
-    return new_store, 201
-
-
-@app.route("/store/<string:name>/item", methods=["POST"])
-def create_item(name):
-    request_data = request.get_json()
-    for store in stores:
-        if store["name"] == name:
-            new_item = {"name": request_data["name"], "price": request_data["price"]}
-            store["items"].append(new_item)
-            return new_item, 201
-    return {"message": "Store not found"}, 404
-
-@app.route("/store"/<string:name>/item")
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", debug=True, port=5000)
+api.register_blueprint(ItemBlueprint)
+api.register_blueprint(StoreBlueprint)

@@ -78,6 +78,8 @@ class VideoMediaStream:
 # Signaling Server - Flask Server
 SIGNALING_SERVER = "127.0.0.1"
 PORT = 8080
+# SIGNALING_SERVER = "https://hello.autoscale.ca/"
+# PORT = 443
 
 
 async def streamer(
