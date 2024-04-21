@@ -20,6 +20,10 @@ Raspberry Pi 4's obtained through Adafruit, Pi-Shop and Ebay...
 32 GB microSD flash-based storage
 1 Gbps private network with PoE
 
+## Build Log
+"14.april: Ansible" 
+Automated the bring-up of the Bramble Cluster using Ansible. Running `ansible-playbook ./playbooks/playbook.yml` will create bring-up cluster and place a kubeconfig in the playbook directory. Thereafter copy the k3sconfig to ~/.kube/config and you should be able to do `kubectl get nodes` from your local machine. Reminder to update to the IP address specified in the k3sconfig from 127.0.0.1 to 192.168.1.100.
+
 ## Feature's On my Mind
 Under Construction
 

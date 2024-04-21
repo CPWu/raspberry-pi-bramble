@@ -1,0 +1,17 @@
+- name: Uninstall k3s on workers
+  become: true
+  hosts: workers
+  tasks:
+  - name: Ping hosts
+    ansible.builtin.ping:
+  - name: Uninstall k3s agent
+    command: /usr/local/bin/k3s-agent-uninstall.sh
+
+- name: Uninstall k3s on servers
+  become: true
+  hosts: controlplane
+  tasks:
+  - name: Ping hosts
+    ansible.builtin.ping:
+  - name: Uninstall k3s server
+    command: /usr/local/bin/k3s-uninstall.sh

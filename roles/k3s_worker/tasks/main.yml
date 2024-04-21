@@ -1,0 +1,15 @@
+---
+  - name: Update Packages on Raspberry PI
+    apt: upgrade=yes update_cache=yes cache_valid_time=86400
+  
+  - name: CGroup Configuration
+    lineinfile:
+      dest=/boot/cmdline.txt
+      backup=yes
+      insertafter='EOF'
+      line='group_enable=cpuset cgroup_enable=memory cgroup_memory=1'
+
+  - name: Reboot Node
+    reboot:
+      msg='Rebooting Node'
+      connect_timeout=30

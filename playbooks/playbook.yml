@@ -1,0 +1,57 @@
+---
+- name: Node Preparation
+  become: true
+  hosts: bramble
+  tasks:
+  - name: Ping Host
+    ping: 
+  - name: Enable Cgroups
+    lineinfile:
+      path: /boot/firmware/cmdline.txt
+      backrefs: true
+      regexp: '^((?!.*\bcgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory\b).*)$'
+      line: '\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory'
+    notify: 
+    - Restart Raspberry Pi
+  handlers:
+  - name: Restart Raspberry Pi
+    reboot:
+
+- name: Install k3s on controlplane
+  become: true
+  hosts: controlplane
+  tasks:
+  - name: Ping Host
+    ping:
+  - name: Install K3s on controlplane server
+    shell: 'curl -sfL https://get.k3s.io | sh -'
+  - name: Give k3s time to startup agent
+    pause:
+      seconds: 60
+  - name: Extract K3S_TOKEN from server output
+    command: cat /var/lib/rancher/k3s/server/node-token
+    register: k3s_token
+    failed_when: k3s_token is failed or k3s_token.stdout is undefined
+  - name: Set K3S_Token as a fact
+    set_fact:
+      k3s_token: "{{ k3s_token.stdout }}"
+
+- name: Install k3s on workers nodes
+  become: true
+  hosts: workers
+  tasks:
+  - name: Ping hosts
+    ping:
+  - name: Install k3s onto worker nodes
+    shell: curl -sfL https://get.k3s.io | K3S_URL=https://{{ hostvars['cp1']['ansible_default_ipv4'].address }}:6443 K3S_TOKEN={{ hostvars['cp1']['k3s_token'] }} K3S_NODE_NAME={{ inventory_hostname }} sh -
+
+- name: Get k3s kubeconfig
+  become: true
+  hosts: controlplane
+  tasks:
+  - name: Fetch kubeconfig
+    fetch: 
+      src: /etc/rancher/k3s/k3s.yaml
+      dest: k3sconfig
+      flat: true
+

@@ -1,0 +1,18 @@
+# Control Plane Nodes
+[controlplane]
+cp1 ansible_host=192.168.1.100 
+
+# Worker Nodes
+[workers]
+worker1 ansible_host=192.168.1.101 
+worker2 ansible_host=192.168.1.102 
+worker3 ansible_host=192.168.1.103 
+
+# Group 'bramble' with all k3s nodes.
+[bramble:children]
+controlplane
+workers
+
+# Variables that will be applied to all
+[bramble:vars]
+ansible_ssh_private_key_file=~/.ssh/id_rsa
