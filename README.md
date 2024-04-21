@@ -24,6 +24,9 @@ Raspberry Pi 4's obtained through Adafruit, Pi-Shop and Ebay...
 "14.april: Ansible" 
 Automated the bring-up of the Bramble Cluster using Ansible. Running `ansible-playbook ./playbooks/playbook.yml` will create bring-up cluster and place a kubeconfig in the playbook directory. Thereafter copy the k3sconfig to ~/.kube/config and you should be able to do `kubectl get nodes` from your local machine. Reminder to update to the IP address specified in the k3sconfig from 127.0.0.1 to 192.168.1.100.
 
+"20.april: Reorganization"
+All application manifests deployed within the Bramble (kubernetes) cluster can be found within the kubernetes/ folder, organized by sub-folders representing kubernetes namespaces deployed within the cluster.
+
 ## Feature's On my Mind
 Under Construction
 
