@@ -4,3 +4,51 @@ metadata:
   name: autoscale
 
 ---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: autoscale
+  name: autoscale-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: autoscale 
+  template:
+    metadata:
+      labels:
+        app: autoscale
+    spec:
+      containers:
+      - name: autoscale
+        image: saterial/autoscale:0.2
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+          name: web
+          protocol: TCP
+        readinessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: autoscale-service
+  namespace: autoscale
+spec:
+  selector:
+    app: autoscale
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 5000
