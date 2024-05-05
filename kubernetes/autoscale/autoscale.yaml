@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: autoscale
-        image: saterial/autoscale:0.4
+        image: saterial/autoscale:0.6
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
